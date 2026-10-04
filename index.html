@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#050509" />
+<meta name="description" content="THE PLANET IDOL — Mobile-first fictional idol trainee community portal." />
+<title>THE PLANET IDOL — SEASON 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050509;
+  --panel:#0b0b12;
+  --panel-2:#101019;
+  --wine:#450A18;
+  --wine-2:#7B182F;
+  --rose:#C43556;
+  --pink:#F9CCCB;
+  --cyan:#86DDE4;
+  --teal:#197074;
+  --deep-teal:#082D36;
+  --text:#f5f4f3;
+  --muted:#aaa9b0;
+  --line:rgba(255,255,255,.11);
+  --shadow:0 20px 70px rgba(0,0,0,.4);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:"Anuphan",system-ui,sans-serif;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select{font:inherit}
+button{color:inherit}
+a{color:inherit;text-decoration:none}
+
+/* ===== COSMIC BACKDROP ===== */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background:
+    radial-gradient(40vw 30vw at 8% 8%, rgba(196,53,86,.14), transparent 65%),
+    radial-gradient(35vw 28vw at 92% 24%, rgba(134,221,228,.08), transparent 70%),
+    radial-gradient(55vw 45vw at 54% 110%, rgba(123,24,47,.12), transparent 70%);
+  z-index:-3;
+}
+#stars,#stars2{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:-2}
+.star{position:absolute;width:2px;height:2px;border-radius:999px;background:#fff;opacity:.7;animation:twinkle 3.6s ease-in-out infinite}
+.star.cyan{background:var(--cyan);box-shadow:0 0 7px var(--cyan)}
+.star.rose{background:var(--rose);box-shadow:0 0 8px var(--rose)}
+@keyframes twinkle{0%,100%{opacity:.18;transform:scale(.75)}50%{opacity:.9;transform:scale(1.35)}}
+
+/* ===== APP SHELL ===== */
+.app{height:100svh;display:grid;grid-template-rows:auto 1fr auto;position:relative;isolation:isolate}
+.topbar{
+  position:relative;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px 10px;padding-top:calc(14px + env(safe-area-inset-top));
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(5,5,9,.96),rgba(5,5,9,.78));backdrop-filter:blur(16px)
+}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer}
+.brand-mark{width:34px;height:34px;border:1px solid rgba(255,255,255,.8);border-radius:50%;position:relative;box-shadow:0 0 16px rgba(255,255,255,.18)}
+.brand-mark::before{content:"";position:absolute;left:50%;top:50%;width:42px;height:12px;border:1px solid var(--pink);border-radius:50%;transform:translate(-50%,-50%) rotate(-16deg);box-shadow:0 0 10px rgba(249,204,203,.34)}
+.brand-mark::after{content:"";position:absolute;inset:8px;border:1px solid rgba(134,221,228,.5);border-radius:50%}
+.brand-copy strong{font:600 14px/1 "Kanit",sans-serif;letter-spacing:.2em}
+.brand-copy span{display:block;margin-top:3px;font-size:8px;color:var(--muted);letter-spacing:.24em;text-transform:uppercase}
+.top-actions{display:flex;gap:7px}
+.icon-btn{width:36px;height:36px;border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:50%;display:grid;place-items:center;cursor:pointer;transition:.2s}
+.icon-btn:hover{border-color:rgba(255,255,255,.35);transform:translateY(-1px)}
+
+.pages{position:relative;min-height:0;overflow:hidden}
+.page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:18px 16px 120px;opacity:0;transform:translateX(20px);pointer-events:none;transition:opacity .28s ease,transform .32s ease;scrollbar-width:none}
+.page::-webkit-scrollbar{display:none}
+.page.active{opacity:1;transform:none;pointer-events:auto}
+.page-content{width:min(1120px,100%);margin:0 auto}
+
+/* ===== MOBILE NAV ===== */
+.bottom-nav{
+  position:relative;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--line);background:rgba(5,5,9,.94);backdrop-filter:blur(18px)
+}
+.nav-item{border:0;background:transparent;padding:7px 4px 6px;cursor:pointer;color:#8f8e95;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:8px;letter-spacing:.14em;text-transform:uppercase}
+.nav-item svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5}
+.nav-item.active{color:#fff}
+.nav-item.active .nav-dot{width:3px;height:3px;border-radius:50%;background:var(--cyan);box-shadow:0 0 9px var(--cyan)}
+.nav-dot{width:3px;height:3px;border-radius:50%;background:transparent}
+
+/* ===== COMMON ===== */
+.eyebrow{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+.title{font:500 clamp(30px,8vw,62px)/.96 "Kanit",sans-serif;letter-spacing:.02em;margin:0}
+.title span{color:var(--pink)}
+.lead{font-size:13px;line-height:1.85;color:#c9c8cd;max-width:720px}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:8px 0 16px}
+.mini{font-size:10px;color:var(--muted);letter-spacing:.18em;text-transform:uppercase}
+.grid{display:grid;gap:12px}
+.card{background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.018));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card.pad{padding:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.055);padding:11px 15px;border-radius:999px;cursor:pointer;font-size:11px;letter-spacing:.09em;transition:.2s}
+.btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.35)}
+.btn.primary{background:linear-gradient(100deg,var(--wine-2),var(--rose));border-color:transparent;box-shadow:0 0 24px rgba(196,53,86,.2)}
+.btn.ghost{background:transparent}
+.badge{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;font-size:8px;letter-spacing:.13em;text-transform:uppercase;border:1px solid var(--line);color:#ddd}
+.badge.rose{border-color:rgba(196,53,86,.55);color:var(--pink)}
+.badge.cyan{border-color:rgba(134,221,228,.45);color:var(--cyan)}
+.badge.teal{border-color:rgba(25,112,116,.7);color:#94e7eb}
+.divider{height:1px;background:var(--line);margin:16px 0}
+
+/* ===== HOME ===== */
+.hero{min-height:calc(100svh - 130px);display:grid;align-items:center}
+.hero-grid{display:grid;gap:28px}
+.hero-copy{padding-top:4px}
+.hero-copy .micro{font-size:9px;letter-spacing:.22em;color:#a9a8ae;text-transform:uppercase}
+.hero-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.hero-note{margin-top:14px;font-size:10px;color:#838189;line-height:1.6}
+.planet-stage{min-height:300px;display:grid;place-items:center;position:relative}
+.planet-stage::before{content:"";position:absolute;width:210px;height:210px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 62%);filter:blur(2px)}
+.planet{width:210px;height:210px;position:relative;filter:drop-shadow(0 0 16px rgba(255,255,255,.11))}
+.planet-core{position:absolute;inset:33px;border:1.5px solid rgba(255,255,255,.92);border-radius:50%;box-shadow:0 0 12px rgba(255,255,255,.25), inset 0 0 10px rgba(255,255,255,.04)}
+.planet-ring{position:absolute;left:50%;top:50%;width:244px;height:76px;border:1.5px solid rgba(249,204,203,.88);border-radius:50%;transform:translate(-50%,-50%) rotate(-17deg);box-shadow:0 0 12px rgba(249,204,203,.25);animation:ring 10s linear infinite}
+.planet-ring.back{width:232px;height:66px;border-color:rgba(134,221,228,.55);transform:translate(-50%,-50%) rotate(12deg);animation-duration:16s;animation-direction:reverse}
+.planet-ring.cut{width:232px;height:66px;border-color:rgba(255,255,255,.18);transform:translate(-50%,-50%) rotate(-17deg);animation:none;clip-path:polygon(0 0,100% 0,100% 45%,0 45%)}
+@keyframes ring{to{transform:translate(-50%,-50%) rotate(343deg)}}
+.orbit-line{position:absolute;left:50%;top:50%;width:284px;height:284px;border:1px dashed rgba(134,221,228,.14);border-radius:50%;transform:translate(-50%,-50%);animation:spin 18s linear infinite}
+.orbit-line.two{width:326px;height:326px;border-color:rgba(196,53,86,.12);animation-duration:26s;animation-direction:reverse}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.planet-cross{position:absolute;left:50%;top:50%;width:6px;height:6px;background:#fff;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 16px 3px rgba(255,255,255,.45)}
+.planet-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:8px;letter-spacing:.25em;color:#fff;opacity:.75}
+.home-info{display:grid;gap:10px}
+.home-info-card{padding:13px 14px;border-left:2px solid var(--rose);background:linear-gradient(90deg,rgba(123,24,47,.2),transparent);border-radius:8px}
+.home-info-card strong{display:block;font:500 16px/1.1 "Kanit"}
+.home-info-card span{display:block;font-size:10px;color:#96949d;margin-top:4px;line-height:1.45}
+
+/* ===== NEWS ===== */
+.news-grid{grid-template-columns:1fr}
+.news-card{padding:15px;cursor:pointer;position:relative;overflow:hidden}
+.news-card::after{content:"↗";position:absolute;right:14px;top:13px;color:#777}
+.news-card .date{font-size:9px;color:#7e7d84;letter-spacing:.14em}
+.news-card h3{font:500 20px/1.1 "Kanit";margin:12px 0 8px}
+.news-card p{font-size:11px;line-height:1.65;color:#afadb4;margin:0}
+.news-card .tag{margin-top:12px}
+
+/* ===== TRAINEES ===== */
+.segmented{display:flex;gap:6px;margin-bottom:13px}
+.segmented button{flex:1;border:1px solid var(--line);background:transparent;padding:9px;border-radius:10px;color:#8f8e95;font-size:10px;letter-spacing:.12em;cursor:pointer}
+.segmented button.active{color:#fff;border-color:rgba(196,53,86,.65);background:rgba(196,53,86,.11)}
+.trainee-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.trainee-card{padding:11px;cursor:pointer;overflow:hidden;position:relative}
+.avatar{aspect-ratio:1/1.08;border-radius:13px;border:1px solid var(--line);background:
+  radial-gradient(circle at 50% 35%,rgba(255,255,255,.12),transparent 25%),
+  linear-gradient(145deg,rgba(196,53,86,.28),rgba(8,45,54,.65));display:grid;place-items:center;margin-bottom:10px}
+.avatar span{font:500 36px/1 "Kanit";color:rgba(255,255,255,.78);letter-spacing:.06em}
+.trainee-code{font-size:8px;letter-spacing:.17em;color:#8c8a92;text-transform:uppercase}
+.trainee-name{font:500 17px/1.05 "Kanit";margin-top:4px}
+.trainee-meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.trainee-meta .badge{font-size:7px}
+
+/* ===== RANKING ===== */
+.rank-list{display:grid;gap:7px}
+.rank-row{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.025)}
+.rank-no{font:500 18px "Kanit";color:#727079}.rank-row.top .rank-no{color:var(--pink)}
+.rank-name strong{display:block;font-size:13px}.rank-name span{font-size:8px;color:#7f7d85;letter-spacing:.12em}
+.score{font:500 16px "Kanit";text-align:right}.score small{display:block;font:400 8px "Anuphan";color:#797780}
+
+/* ===== CAST ===== */
+.cast-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cast-card{padding:12px}.cast-card .role{font-size:8px;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase}.cast-card h3{font:500 18px "Kanit";margin:8px 0 4px}.cast-card p{font-size:10px;color:#8f8d96;margin:0;line-height:1.5}
+
+/* ===== PROGRAM ===== */
+.months{display:flex;gap:6px;overflow:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none}.months::-webkit-scrollbar{display:none}
+.month-btn{flex:0 0 auto;border:1px solid var(--line);background:transparent;padding:8px 13px;border-radius:999px;font-size:9px;letter-spacing:.12em;cursor:pointer;color:#9a98a0}.month-btn.active{color:#fff;border-color:rgba(134,221,228,.6);background:rgba(134,221,228,.07)}
+.calendar{overflow:hidden}.calendar-head{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:8px 8px 4px;font-size:8px;color:#6e6d75;letter-spacing:.12em;text-align:center}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:8px}
+.day{min-height:52px;border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:6px;position:relative;background:rgba(255,255,255,.018)}
+.day.muted{opacity:.3}.day .num{font-size:9px;color:#9e9ca4}.day.today{border-color:rgba(249,204,203,.6)}
+.event-dot{position:absolute;left:6px;bottom:6px;width:5px;height:5px;border-radius:50%;background:var(--rose);box-shadow:0 0 7px rgba(196,53,86,.7)}
+.event-dot.c{background:var(--cyan);box-shadow:0 0 7px rgba(134,221,228,.7)}
+.event-label{position:absolute;left:13px;right:3px;bottom:4px;font-size:6.5px;color:#b7b5bd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.schedule-list{display:grid;gap:7px;margin-top:12px}.schedule-item{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:center;padding:11px;border:1px solid var(--line);border-radius:11px}.schedule-item time{font:500 13px "Kanit";color:var(--cyan)}.schedule-item strong{font-size:11px}.schedule-item span{display:block;color:#8f8c95;font-size:9px;margin-top:2px}
+
+/* ===== RULES / UNIFORM ===== */
+.rule-grid{display:grid;gap:9px}.rule{display:grid;grid-template-columns:32px 1fr;gap:11px;align-items:start;padding:12px 13px}.rule-no{font:500 15px "Kanit";color:var(--rose)}.rule strong{font-size:12px}.rule p{font-size:9px;line-height:1.6;color:#8f8d96;margin:4px 0 0}
+.uniform-tabs{display:flex;gap:6px;margin-bottom:12px}.uniform-tabs button{flex:1;padding:10px;border:1px solid var(--line);border-radius:11px;background:transparent;color:#98969e;cursor:pointer;font-size:10px;letter-spacing:.12em}.uniform-tabs button.active{color:#fff;border-color:rgba(134,221,228,.45);background:rgba(8,45,54,.42)}
+.uniform-visual{height:240px;border:1px solid var(--line);border-radius:18px;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,rgba(134,221,228,.09),transparent 50%),linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.012));position:relative;overflow:hidden}
+.uniform-visual::after{content:"UNIFORM / 01";position:absolute;right:12px;top:10px;font-size:7px;letter-spacing:.2em;color:#6f6d76}.silhouette{width:118px;height:190px;position:relative}.head{width:30px;height:30px;border:1px solid rgba(255,255,255,.75);border-radius:50%;position:absolute;left:44px;top:3px}.body{width:70px;height:100px;border:1px solid rgba(255,255,255,.75);border-radius:18px 18px 8px 8px;position:absolute;left:24px;top:39px;box-shadow:0 0 18px rgba(134,221,228,.09)}.body::after{content:"";position:absolute;left:8px;right:8px;top:16px;height:1px;background:rgba(249,204,203,.7);box-shadow:0 22px 0 rgba(255,255,255,.18)}.leg{position:absolute;width:19px;height:64px;border:1px solid rgba(255,255,255,.7);border-radius:0 0 6px 6px;top:136px}.leg.l{left:35px}.leg.r{right:35px}.shoe{position:absolute;width:28px;height:7px;border:1px solid rgba(249,204,203,.85);border-radius:8px;bottom:0}.shoe.l{left:28px}.shoe.r{right:28px}
+.uniform-copy{padding:14px 2px}.uniform-copy h3{font:500 23px "Kanit";margin:0 0 8px}.uniform-copy p{font-size:10px;line-height:1.7;color:#96939c;margin:0}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:11px}.spec{padding:9px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.02)}.spec b{display:block;font-size:8px;letter-spacing:.12em;color:#78767e;text-transform:uppercase}.spec span{display:block;font-size:11px;margin-top:3px}
+
+/* ===== STAGES ===== */
+.stage-grid{display:grid;gap:9px}.stage-card{padding:14px;position:relative;overflow:hidden;cursor:pointer}.stage-card::before{content:"";position:absolute;inset:auto -30px -45px auto;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(196,53,86,.22),transparent 70%)}.stage-card .num{font:500 34px "Kanit";color:#5e5961}.stage-card h3{font:500 20px "Kanit";margin:1px 0 6px}.stage-card p{font-size:10px;color:#95929b;line-height:1.6;margin:0}.stage-card .meta{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+
+/* ===== MUSIC ===== */
+.music-hero{display:grid;gap:13px}.track{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:13px;cursor:pointer}.track-art{width:48px;height:48px;border:1px solid rgba(255,255,255,.18);border-radius:11px;background:conic-gradient(from 140deg,var(--wine),var(--rose),var(--cyan),var(--deep-teal),var(--wine));position:relative;overflow:hidden}.track-art::after{content:"";position:absolute;inset:9px;border:1px solid #fff;border-radius:50%;opacity:.75}.track h3{font:500 15px "Kanit";margin:0}.track p{margin:3px 0 0;color:#85838b;font-size:8px}.track button{width:32px;height:32px;border:1px solid var(--line);background:transparent;border-radius:50%;cursor:pointer}
+.player{position:sticky;bottom:0;z-index:5;padding:12px 0 0;background:linear-gradient(180deg,rgba(5,5,9,0),rgba(5,5,9,.98) 25%)}.player-box{padding:12px 13px;border:1px solid rgba(134,221,228,.17);background:rgba(7,16,19,.9);border-radius:15px;backdrop-filter:blur(16px)}.player-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.now-playing{font:500 16px "Kanit"}.now-playing small{display:block;font:400 8px "Anuphan";color:#7d7b83}.player-controls{display:flex;align-items:center;gap:7px}.ctrl{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.035);cursor:pointer}.ctrl.play{width:40px;height:40px;background:var(--rose);border-color:transparent}.progress{width:100%;height:4px;background:#22212a;border-radius:99px;appearance:none;accent-color:var(--rose);margin:10px 0 3px}.time-row{display:flex;justify-content:space-between;font-size:7px;color:#6f6d75}.file-row{display:flex;gap:8px;align-items:center;margin-top:11px}.file-row input{width:100%;font-size:9px;color:#9b99a1}
+
+/* ===== MODAL ===== */
+.modal{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.74);backdrop-filter:blur(10px);display:none;align-items:flex-end;padding:12px}.modal.open{display:flex}.modal-panel{width:min(760px,100%);max-height:90svh;overflow:auto;background:linear-gradient(160deg,#0f1017,#08080d);border:1px solid rgba(255,255,255,.13);border-radius:20px;box-shadow:0 35px 90px rgba(0,0,0,.55);padding:17px;margin:0 auto;scrollbar-width:none}.modal-panel::-webkit-scrollbar{display:none}.modal-close{float:right;width:34px;height:34px;border:1px solid var(--line);background:transparent;border-radius:50%;cursor:pointer}.modal h2{font:500 26px "Kanit";margin:4px 0 5px}.modal .sub{font-size:9px;color:#77757d;letter-spacing:.14em;text-transform:uppercase}.modal p{font-size:11px;color:#aaa8b0;line-height:1.75}.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.data-cell{padding:9px 10px;border:1px solid var(--line);border-radius:10px}.data-cell b{display:block;font-size:7px;color:#6d6b74;letter-spacing:.14em;text-transform:uppercase}.data-cell span{display:block;margin-top:3px;font-size:10px}
+
+/* ===== MORE MENU ===== */
+.more-panel{position:fixed;left:10px;right:10px;bottom:calc(66px + env(safe-area-inset-bottom));z-index:40;padding:9px;background:rgba(12,12,19,.97);border:1px solid var(--line);border-radius:16px;display:none;box-shadow:var(--shadow)}.more-panel.open{display:block}.more-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.more-link{padding:11px 6px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(255,255,255,.02);font-size:8px;letter-spacing:.11em;color:#aaa8b0;cursor:pointer;text-align:center}.more-link.active{color:#fff;border-color:rgba(255,255,255,.22)}
+
+/* ===== INTRO ===== */
+.intro{position:fixed;inset:0;z-index:120;background:#030306;display:grid;place-items:center;padding:20px;transition:opacity .55s ease,visibility .55s ease}.intro.hide{opacity:0;visibility:hidden}.intro-box{width:min(520px,100%);text-align:center}.intro-planet{width:130px;height:130px;position:relative;margin:0 auto 23px}.intro-planet::before{content:"";position:absolute;inset:20px;border:1px solid rgba(255,255,255,.85);border-radius:50%;box-shadow:0 0 18px rgba(255,255,255,.2)}.intro-planet::after{content:"";position:absolute;left:50%;top:50%;width:160px;height:48px;border:1px solid rgba(249,204,203,.82);border-radius:50%;transform:translate(-50%,-50%) rotate(-18deg);box-shadow:0 0 13px rgba(249,204,203,.18)}.intro-box .word{font:500 34px/1 "Kanit";letter-spacing:.08em}.intro-box .line{font-size:8px;letter-spacing:.35em;color:#7d7b83;margin:8px 0 22px;text-transform:uppercase}.intro-box .enter{padding:12px 24px}
+
+@media (min-width:720px){
+  .app{grid-template-rows:auto 1fr}
+  .topbar{padding-left:28px;padding-right:28px}
+  .bottom-nav{position:fixed;left:20px;top:96px;bottom:auto;width:64px;display:flex;flex-direction:column;padding:7px;border:1px solid var(--line);border-radius:18px;background:rgba(8,8,13,.88)}
+  .nav-item{padding:10px 4px}
+  .nav-item span{font-size:7px}
+  .pages{grid-row:2}
+  .page{padding:32px 32px 70px;padding-left:116px}
+  .hero-grid{grid-template-columns:minmax(0,1fr) minmax(360px,500px);align-items:center;min-height:calc(100svh - 90px)}
+  .planet-stage{min-height:540px}.planet{width:340px;height:340px}.planet-core{inset:54px}.planet-ring{width:390px;height:118px}.planet-ring.back{width:378px;height:108px}.planet-ring.cut{width:378px;height:108px}.orbit-line{width:456px;height:456px}.orbit-line.two{width:515px;height:515px}.planet-stage::before{width:340px;height:340px}
+  .news-grid{grid-template-columns:repeat(3,1fr)}
+  .trainee-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .cast-grid{grid-template-columns:repeat(4,1fr)}
+  .stage-grid{grid-template-columns:repeat(2,1fr)}
+  .modal{align-items:center;padding:20px}.modal-panel{max-height:82svh}
+  .more-panel{left:100px;right:auto;width:340px;bottom:auto;top:96px}
+}
+@media (min-width:1080px){
+  .page-content{width:min(1180px,100%)}
+}
+</style>
+</head>
+<body>
+<div id="stars"></div><div id="stars2"></div>
+
+<!-- INTRO / AUDIO GATE -->
+<section class="intro" id="intro">
+  <div class="intro-box">
+    <div class="intro-planet" aria-hidden="true"></div>
+    <div class="word">THE PLANET IDOL</div>
+    <div class="line">season 01 · trainee orbit · asia</div>
+    <button class="btn primary enter" id="enterBtn">ENTER THE PLANET&nbsp; →</button>
+    <div style="font-size:8px;color:#58565f;margin-top:12px;line-height:1.5">แตะครั้งเดียวเพื่อเข้าสู่ระบบและเปิดเสียงเพลง</div>
+  </div>
+</section>
+
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand" data-page="home" role="button" tabindex="0" aria-label="Go to home">
+      <div class="brand-mark"></div>
+      <div class="brand-copy"><strong>THE PLANET IDOL</strong><span>season 01 / official trainee archive</span></div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="soundBtn" aria-label="Toggle music">♪</button>
+      <button class="icon-btn" id="moreBtn" aria-label="Open menu">☷</button>
+    </div>
+  </header>
+
+  <main class="pages">
+    <!-- HOME -->
+    <section class="page active" id="page-home">
+      <div class="page-content hero">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div class="micro">THE PLANET IDOL · OFFICIAL PUBLIC INFORMATION</div>
+            <div class="eyebrow" style="margin-top:17px">A NEW ORBIT OF TALENT</div>
+            <h1 class="title">ยินดีต้อนรับสู่<br><span>THE PLANET</span> IDOL</h1>
+            <p class="lead">พื้นที่ฝึกฝน การแข่งขัน และการเติบโตของเหล่าเด็กฝึกที่ได้รับคัดเลือกเข้าสู่ภารกิจค้นหาดาวดวงใหม่แห่งวงการไอดอล ทุกคนจะได้พิสูจน์ตัวเองผ่านภารกิจ เวทีประเมิน และระบบจัดอันดับตลอด Season 01</p>
+            <div class="hero-actions">
+              <button class="btn primary" data-page="trainees">MEET THE TRAINEES ↗</button>
+              <button class="btn ghost" data-page="program">OPEN PROGRAM</button>
+            </div>
+            <div class="hero-note">SEASON WINDOW · JAN — MAY 2570 · STATUS: ACTIVE · ALL CONTENT IS EDITABLE DEMO DATA</div>
+          </div>
+          <div class="planet-stage">
+            <div class="orbit-line"></div><div class="orbit-line two"></div>
+            <div class="planet" aria-label="white line planet with glowing rings">
+              <div class="planet-core"></div><div class="planet-ring back"></div><div class="planet-ring"></div><div class="planet-ring cut"></div><div class="planet-cross"></div><div class="planet-label">P·01</div>
+            </div>
+          </div>
+        </div>
+        <div class="home-info">
+          <div class="home-info-card"><strong>ABOUT THE PROGRAM</strong><span>ระบบค่ายจำลองไอดอลที่ออกแบบให้เด็กฝึกถูกมองเห็นเป็นรายบุคคล ทั้งประวัติ คะแนน ภารกิจ และพัฒนาการ</span></div>
+          <div class="home-info-card"><strong>TRAINEE DIVISION</strong><span>แบ่งคลังข้อมูลเป็น B-TRAINEES และ G-TRAINEES พร้อมโปรไฟล์แบบเต็มหน้าต่าง</span></div>
+          <div class="home-info-card"><strong>PROGRAM &amp; STAGES</strong><span>ติดตามปฏิทิน มกราคม 2570 — พฤษภาคม 2570 และเปิดรายละเอียดแต่ละภารกิจได้โดยไม่ต้องเลื่อนผ่านหน้าอื่น</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANNOUNCEMENT -->
+    <section class="page" id="page-news">
+      <div class="page-content">
+        <div class="section-head"><div><div class="eyebrow">LATEST UPDATES</div><h2 class="title">ข่าวสารล่าสุด</h2></div><span class="mini">01 / 03</span></div>
+        <div class="news-grid grid" id="newsGrid"></div>
+      </div>
+    </section>
+
+    <!-- MUSIC -->
+    <section class="page" id="page-music">
+      <div class="page-content">
+        <div class="section-head"><div><div class="eyebrow">OFFICIAL SOUND</div><h2 class="title">เพลงประจำ <span>รายการ</span></h2></div><span class="mini">MP3 READY</span></div>
+        <div class="music-hero">
+          <div class="card pad">
+            <div class="eyebrow">TITLE SONG</div>
+            <h3 style="font:500 28px 'Kanit';margin:0">YOUR ORBIT</h3>
+            <p class="lead" style="font-size:11px;margin:7px 0 0">พื้นที่สำหรับเพลงประจำรายการ ไกด์ อินสทรูเมนทัล และเพลงสำหรับ Mission ทั้งหมดสามารถผูกไฟล์ MP3 ในโฟลเดอร์ <b style="color:#fff">music/</b> หรือเลือกไฟล์จากเครื่องเพื่อทดลองเล่น</p>
+          </div>
+          <div id="trackList" class="grid"></div>
+          <div class="player"><div class="player-box">
+            <div class="player-top"><div class="now-playing" id="nowPlaying">NO TRACK SELECTED<small>THE PLANET IDOL AUDIO SYSTEM</small></div><div class="player-controls"><button class="ctrl" id="prevBtn">‹</button><button class="ctrl play" id="playBtn">▶</button><button class="ctrl" id="nextBtn">›</button></div></div>
+            <input class="progress" id="progress" type="range" min="0" max="100" value="0" aria-label="Song progress">
+            <div class="time-row"><span id="currentTime">00:00</span><span id="duration">00:00</span></div>
+            <div class="file-row"><input type="file" id="audioFile" accept="audio/mpeg,audio/mp3,audio/wav,audio/*"><span style="font-size:8px;color:#67656e">LOCAL PREVIEW</span></div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRAINEES -->
+    <section class="page" id="page-trainees">
+      <div class="page-content">
+        <div class="section-head"><div><div class="eyebrow">MEET THE TRAINEES</div><h2 class="title">TRAINEES</h2></div><span class="mini">PROFILE ARCHIVE</span></div>
+        <div class="segmented" id="traineeTabs"><button class="active" data-sex="B">B-TRAINEES</button><button data-sex="G">G-TRAINEES</button></div>
+        <div class="trainee-grid" id="traineeGrid"></div>
+      </div>
+    </section>
+
+    <!-- RANKING -->
+    <section class="page" id="page-ranking">
+      <div class="page-content">
+        <div class="section-head"><div><div class="eyebrow">OFFICIAL RANKING</div><h2 class="title">TRAINEES <span>RANKING</span></h2></div><span class="mini">LAST UPDATE / 05.01.2570</span></div>
+        <div class="segmented" id="rankingTabs"><button class="active" data-sex="B">B-TRAINEES</button><button data-sex="G">G-TRAINEES</button></div>
+        <div class="rank-list" id="rankList"></div>
+      </div>
+    </section>
+
+    <!-- CAST -->
+    <section class="page" id="page-cast">
+      <div class="page-content">
+        <div class="section-head"><div><div class="eyebrow">MENTORS &amp; STAFF</div><h2 class="title">CAST</h2></div><span class="mini">CORE TEAM</span></div>
+        <div class="cast-grid" id="castGrid"></div>
+      </div>
+    </section>
+
+    <!-- PROGRAM -->
+    <section class="page" id="page-program">
+      <div class="page-content">
+        <div class="section-head"><div><div class="eyebrow">SCHEDULE</div><h2 class="title">PROGRAM</h2></div><span class="mini">JAN — MAY 2570</span></div>
+        <div class="months" id="months"></div>
+        <div class="calendar card" id="calendar"></div>
+        <div class="schedule-list" id="scheduleList"></div>
+      </div>
+    </section>
+
+    <!-- RULES -->
+    <section class="page" id="page-rules">
+      <div class="page-content">
+        <div class="section-head"><div><div class="eyebrow">TRAINEE HANDBOOK</div><h2 class="title">RULES</h2></div><span class="mini">READ BEFORE ENTERING</span></div>
+        <div class="rule-grid" id="ruleGrid"></div>
+      </div>
+    </section>
+
+    <!-- UNIFORM -->
+    <section class="page" id="page-uniform">
+      <div class="page-content">
+        <div class="section-head"><div><div class="eyebrow">OFFICIAL TRAINEE ATTIRE</div><h2 class="title">UNIFORM</h2></div><span class="mini">B / G DIVISION</span></div>
+        <div class="uniform-tabs" id="uniformTabs"><button class="active" data-sex="B">B-UNIFORM</button><button data-sex="G">G-UNIFORM</button></div>
+        <div class="card pad" id="uniformCard"></div>
+      </div>
+    </section>
+
+    <!-- STAGES -->
+    <section class="page" id="page-stages">
+      <div class="page-content">
+        <div class="section-head"><div><div class="eyebrow">STAGES &amp; MISSIONS</div><h2 class="title">STAGE <span>BATTLE</span></h2></div><span class="mini">SEASON 01</span></div>
+        <div class="stage-grid" id="stageGrid"></div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="page" id="page-about">
+      <div class="page-content">
+        <div class="section-head"><div><div class="eyebrow">SYSTEM / INFORMATION</div><h2 class="title">ABOUT <span>THE PLANET</span></h2></div><span class="mini">SEASON 01</span></div>
+        <div class="grid" style="gap:10px">
+          <div class="card pad"><div class="eyebrow">01 · CONCEPT</div><h3 style="font:500 23px 'Kanit';margin:0">A NEW ORBIT OF TALENT</h3><p class="lead" style="font-size:11px">THE PLANET IDOL คือพื้นที่เล่าเรื่องเด็กฝึกแบบ modular — ทุกส่วนของข้อมูลถูกแยกเป็นหน้าที่กดเข้าไปอ่านได้ทันที เพื่อให้เหมือนระบบเว็บไซต์ของรายการจริงบนมือถือ</p></div>
+          <div class="card pad"><div class="eyebrow">02 · DATA</div><h3 style="font:500 23px 'Kanit';margin:0">EDITABLE BY DESIGN</h3><p class="lead" style="font-size:11px">รายชื่อเด็กฝึก ข่าวสาร ตาราง และเพลงตั้งต้นอยู่ใน JavaScript ของหน้าเดียว แก้ข้อมูลได้ง่ายก่อนนำขึ้น GitHub Pages</p></div>
+          <div class="card pad"><div class="eyebrow">03 · DEPLOY</div><h3 style="font:500 23px 'Kanit';margin:0">MOBILE FIRST / STATIC</h3><p class="lead" style="font-size:11px">ไม่มี backend และไม่มี framework เหมาะกับ GitHub Pages, Netlify หรือพื้นที่ static hosting ทั่วไป</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" data-page="home"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>HOME</span><i class="nav-dot"></i></button>
+    <button class="nav-item" data-page="news"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 12h8M8 15h5"/></svg><span>NEWS</span><i class="nav-dot"></i></button>
+    <button class="nav-item" data-page="trainees"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><path d="M3.5 19c.6-3 2.4-4.5 5.5-4.5s4.9 1.5 5.5 4.5M17 8.2c1.9.3 3 1.5 3 3.2M15.5 14.7c2.5.1 4.1 1.5 4.8 4.3"/></svg><span>TRAINEES</span><i class="nav-dot"></i></button>
+    <button class="nav-item" data-page="program"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 9h16M8 13h3M8 16h5"/></svg><span>PROGRAM</span><i class="nav-dot"></i></button>
+    <button class="nav-item" id="navMore"><svg viewBox="0 0 24 24"><path d="M5 5h14v14H5zM9 9h6v6H9z"/></svg><span>MORE</span><i class="nav-dot"></i></button>
+  </nav>
+</div>
+
+<div class="more-panel" id="morePanel"><div class="more-grid">
+  <button class="more-link" data-page="ranking">RANKING</button><button class="more-link" data-page="cast">CAST</button><button class="more-link" data-page="music">MUSIC</button>
+  <button class="more-link" data-page="rules">RULES</button><button class="more-link" data-page="uniform">UNIFORM</button><button class="more-link" data-page="stages">STAGES</button>
+  <button class="more-link" data-page="about">ABOUT</button><button class="more-link" data-page="home">HOME</button><button class="more-link" id="closeMore">CLOSE</button>
+</div></div>
+
+<div class="modal" id="modal"><div class="modal-panel"><button class="modal-close" id="modalClose">×</button><div id="modalBody"></div></div></div>
+<audio id="audio" preload="metadata"></audio>
+
+<script>
+const DATA = {
+  news: [
+    {date:'05 JAN 2570',tag:'SYSTEM',title:'เปิดระบบ THE PLANET IDOL — SEASON 01',text:'หน้าเว็บหลักพร้อมสำหรับใช้งานแล้ว พร้อมระบบโปรไฟล์เด็กฝึก โปรแกรม ปฏิทิน ข่าวสาร และเพลงประจำรายการ'},
+    {date:'12 JAN 2570',tag:'PROGRAM',title:'ORIENTATION WEEK',text:'เด็กฝึกทุกคนเข้าร่วมการปฐมนิเทศ รับเครื่องแบบ ชี้แจงกฎ และทำแบบประเมินพื้นฐาน'},
+    {date:'01 FEB 2570',tag:'MISSION',title:'MISSION 01 — FIRST SIGNAL',text:'ภารกิจแรกเริ่มต้นอย่างเป็นทางการ แบ่งทีมตามสาย Vocal / Rap / Dance เพื่อเก็บคะแนนสะสม'}
+  ],
+  trainees: [
+    {sex:'B',id:'B-001',name:'ASTRO',real:'ข้อมูลชื่อจริงรอกรอก',age:'—',height:'—',from:'—',position:'Vocal / Center',grade:'A',quote:'The stage is my gravity.'},
+    {sex:'B',id:'B-002',name:'NOVA',real:'ข้อมูลชื่อจริงรอกรอก',age:'—',height:'—',from:'—',position:'Dance / Performance',grade:'B',quote:'Move first. Fear later.'},
+    {sex:'B',id:'B-003',name:'ORION',real:'ข้อมูลชื่อจริงรอกรอก',age:'—',height:'—',from:'—',position:'Rap / Producer',grade:'B',quote:'Make your own signal.'},
+    {sex:'B',id:'B-004',name:'VEGA',real:'ข้อมูลชื่อจริงรอกรอก',age:'—',height:'—',from:'—',position:'Vocal / Visual',grade:'C',quote:'A quiet light can still lead.'},
+    {sex:'G',id:'G-001',name:'LYRA',real:'ข้อมูลชื่อจริงรอกรอก',age:'—',height:'—',from:'—',position:'Vocal / Center',grade:'A',quote:'I sing where the stars begin.'},
+    {sex:'G',id:'G-002',name:'SELENE',real:'ข้อมูลชื่อจริงรอกรอก',age:'—',height:'—',from:'—',position:'Dance / Vocal',grade:'B',quote:'Keep your orbit beautiful.'},
+    {sex:'G',id:'G-003',name:'COMET',real:'ข้อมูลชื่อจริงรอกรอก',age:'—',height:'—',from:'—',position:'Rap / Performance',grade:'B',quote:'Fast heart, clear mind.'},
+    {sex:'G',id:'G-004',name:'AURA',real:'ข้อมูลชื่อจริงรอกรอก',age:'—',height:'—',from:'—',position:'Visual / Dance',grade:'C',quote:'Glow without asking.'}
+  ],
+  cast: [
+    {role:'EXECUTIVE PRODUCER',name:'PRODUCER A',desc:'ผู้ดูแลภาพรวมของ Season 01 และทิศทางการแข่งขัน'},
+    {role:'HEAD TRAINER',name:'TRAINER R.',desc:'กำกับหลักสูตร Stage / Performance และการประเมินรายสัปดาห์'},
+    {role:'VOCAL DIRECTOR',name:'VOCAL M.',desc:'ดูแลเทคนิคการร้อง การออกเสียง และการบันทึกเสียง'},
+    {role:'PERFORMANCE DIRECTOR',name:'DANCE S.',desc:'ดูแล choreography, stage presence และ team formation'},
+    {role:'CREATIVE',name:'CREATIVE N.',desc:'รับผิดชอบ visual identity, concept photo และ title content'},
+    {role:'STAGE MANAGER',name:'STAGE K.',desc:'ประสานเวที คิวซ้อม ระบบเสียง และ rundown'},
+    {role:'TRAINEE AFFAIRS',name:'STAFF P.',desc:'ดูแลสวัสดิการ การลงทะเบียน และเอกสารเด็กฝึก'},
+    {role:'MEDIA',name:'MEDIA L.',desc:'ข่าวสาร ประกาศ และคลังสื่อประจำรายการ'}
+  ],
+  rules: [
+    ['01','ATTENDANCE','ต้องเข้าซ้อมและกิจกรรมตามเวลาที่ประกาศ การขาดโดยไม่แจ้งอาจส่งผลต่อสิทธิ์ในภารกิจ'],
+    ['02','RESPECT','ห้ามคุกคาม ดูหมิ่น เหยียด หรือเผยแพร่ข้อมูลส่วนบุคคลของเด็กฝึก บุคลากร หรือผู้ร่วมรายการ'],
+    ['03','CONFIDENTIALITY','ห้ามเผยแพร่โจทย์ คะแนน หรือเนื้อหาที่ระบุว่าเป็น INTERNAL ก่อนวันประกาศอย่างเป็นทางการ'],
+    ['04','UNIFORM','ระหว่างช่วง TRAINING และ OFFICIAL SCHEDULE ต้องสวมเครื่องแบบที่กำหนดให้ตรงเพศ/รุ่นตามประกาศ'],
+    ['05','CONTENT','ผลงานที่ส่งต้องเป็นของผู้ส่งหรือได้รับสิทธิ์อย่างถูกต้อง ห้ามนำผลงานผู้อื่นมาอ้างเป็นของตน'],
+    ['06','EDITING','งานเสียงทุกชิ้นต้องปฏิบัติตามกติกาของ Mission นั้น ๆ โดยเฉพาะการปรับเสียงและรูปแบบไฟล์'],
+    ['07','SAFETY','หากเกิดเหตุฉุกเฉิน การบาดเจ็บ หรือปัญหาที่กระทบการซ้อม ให้แจ้ง STAFF ทันที'],
+    ['08','DISCIPLINE','การฝ่าฝืนซ้ำสามารถถูกเตือน หักคะแนน พักภารกิจ หรือพิจารณาสิทธิ์การเข้าแข่งขันตามความเหมาะสม']
+  ],
+  stages: [
+    {no:'01',title:'FIRST SIGNAL',name:'TEAM BATTLE',desc:'ภารกิจเปิดตัว ให้เด็กฝึกจับทีมและนำเสนอเวอร์ชันแรกของเพลงประจำภารกิจ',meta:['VOCAL','RAP','DANCE']},
+    {no:'02',title:'SECOND ORBIT',name:'POSITION EVALUATION',desc:'เลือกสายที่ถนัดและแข่งขันในโจทย์เฉพาะทาง เพื่อวัดทักษะรายบุคคล',meta:['POSITION','INDIVIDUAL SCORE']},
+    {no:'03',title:'GRAVITY SHIFT',name:'COLLABORATION',desc:'ร่วมงานกับ Producer และศิลปินรับเชิญเพื่อทดลอง concept ที่แตกต่าง',meta:['COLLAB','CREATIVE']},
+    {no:'04',title:'FINAL ASCENT',name:'DEBUT NIGHT',desc:'Grand Final สำหรับผู้ผ่านการคัดเลือกรอบสุดท้าย เพื่อค้นหาผู้ที่จะขึ้นเป็นศิลปินตัวจริง',meta:['LIVE','FINAL']}
+  ],
+  uniforms: {
+    B:{title:'B-UNIFORM / MALE',headline:'MODERN TRAINING SUIT',desc:'เสื้อแจ็กเก็ตทรงสปอร์ตโครงสร้างสะอาด คู่กับกางเกงขายาวสีเข้มและรองเท้าหนัง/สปอร์ตสีดำ ใช้ตรา THE PLANET IDOL ที่อกซ้าย',specs:[['TOP','BLACK / DEEP WINE DETAIL'],['BOTTOM','STRAIGHT LONG PANTS'],['SHOES','BLACK'],['BADGE','B-TRAINEE ID'] ]},
+    G:{title:'G-UNIFORM / FEMALE',headline:'MODERN TRAINING SET',desc:'แจ็กเก็ตทรงเข้ารูปหรือ blazer sporty คู่กระโปรง/กางเกงตาม track ที่กำหนด ใช้ accent สี rose และ cyan แบบเดียวกับ brand system',specs:[['TOP','BLACK / ROSE DETAIL'],['BOTTOM','SKIRT OR LONG PANTS'],['SHOES','BLACK'],['BADGE','G-TRAINEE ID'] ]}
+  },
+  schedule:[
+    {month:1,date:'05 JAN',title:'ORIENTATION DAY',where:'TRAINING BASE · 10:00 — 17:00',tone:'r'},
+    {month:1,date:'18 JAN',title:'BASELINE EVALUATION',where:'VOCAL / RAP / DANCE ASSESSMENT',tone:'c'},
+    {month:2,date:'01 FEB',title:'MISSION 01 OPEN',where:'FIRST SIGNAL · TEAM FORMATION',tone:'r'},
+    {month:2,date:'14 FEB',title:'TITLE SONG RECORDING',where:'AUDIO STUDIO · ALL TRAINEES',tone:'c'},
+    {month:3,date:'07 MAR',title:'STAGE 01 CHECK',where:'TEAM BATTLE · CAMERA REHEARSAL',tone:'r'},
+    {month:3,date:'21 MAR',title:'RANKING UPDATE',where:'OFFICIAL SCORE RELEASE',tone:'c'},
+    {month:4,date:'04 APR',title:'POSITION EVALUATION',where:'SECOND ORBIT',tone:'r'},
+    {month:4,date:'24 APR',title:'COLLAB REHEARSAL',where:'PRODUCER SESSION',tone:'c'},
+    {month:5,date:'02 MAY',title:'FINAL MISSION',where:'FINAL ASCENT',tone:'r'},
+    {month:5,date:'23 MAY',title:'DEBUT NIGHT',where:'GRAND FINAL · LIVE',tone:'c'}
+  ],
+  tracks:[
+    {title:'YOUR ORBIT',artist:'THE PLANET IDOL · TITLE SONG',src:'music/title-song.mp3'},
+    {title:'FIRST SIGNAL',artist:'MISSION 01 · GUIDE / DEMO',src:'music/mission-01.mp3'},
+    {title:'INSTRUMENTAL 01',artist:'TRAINING ROOM · PRACTICE',src:'music/instrumental-01.mp3'}
+  ]
+};
+
+const monthNames = ['JANUARY 2570','FEBRUARY 2570','MARCH 2570','APRIL 2570','MAY 2570'];
+const monthShort = ['JAN','FEB','MAR','APR','MAY'];
+
+/* stars */
+function seedStars(root,count,offset=0){for(let i=0;i<count;i++){const s=document.createElement('span');s.className='star '+(i%11===0?'cyan':i%17===0?'rose':'');s.style.left=((i*37+offset)%101)+'%';s.style.top=((i*61+offset*3)%101)+'%';s.style.animationDelay=((i%19)/3)+'s';s.style.transform='scale('+(0.6+(i%5)*.2)+')';root.appendChild(s)}}
+seedStars(document.getElementById('stars'),85,3); seedStars(document.getElementById('stars2'),55,41);
+
+/* page navigation */
+const pages=[...document.querySelectorAll('.page')];
+const navItems=[...document.querySelectorAll('[data-page]')];
+const morePanel=document.getElementById('morePanel');
+let currentPage='home';
+function go(page){
+  const target=document.getElementById('page-'+page); if(!target)return;
+  pages.forEach(p=>p.classList.toggle('active',p.id==='page-'+page));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
+  document.querySelectorAll('.more-link').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
+  currentPage=page; morePanel.classList.remove('open');
+  target.scrollTop=0;
+  history.replaceState(null,'','#'+page);
+}
+navItems.forEach(el=>el.addEventListener('click',()=>go(el.dataset.page)));
+document.querySelector('.brand').addEventListener('click',()=>go('home'));
+document.querySelector('.brand').addEventListener('keydown',e=>{if(e.key==='Enter')go('home')});
+document.querySelectorAll('.more-link[data-page]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.page)));
+document.getElementById('closeMore').addEventListener('click',()=>morePanel.classList.remove('open'));
+document.getElementById('moreBtn').addEventListener('click',()=>morePanel.classList.toggle('open'));
+document.getElementById('navMore').addEventListener('click',()=>morePanel.classList.toggle('open'));
+
+/* Home action buttons */
+document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',e=>{const p=e.currentTarget.dataset.page;if(p)go(p)}));
+
+/* news */
+const newsGrid=document.getElementById('newsGrid');
+DATA.news.forEach((n,i)=>{const card=document.createElement('article');card.className='card news-card';card.innerHTML=`<div class="date">${n.date}</div><h3>${n.title}</h3><p>${n.text}</p><div class="tag"><span class="badge ${i===0?'rose':'cyan'}">${n.tag}</span></div>`;card.addEventListener('click',()=>openModal(`<div class="eyebrow">OFFICIAL ANNOUNCEMENT</div><h2>${n.title}</h2><div class="sub">${n.date} · ${n.tag}</div><p>${n.text}</p><div class="divider"></div><p>ประกาศนี้เป็นข้อมูลตั้งต้นของเว็บไซต์ตัวอย่าง สามารถแก้ไขข้อความ วันเวลา และรายละเอียดได้ในตัวแปร <b style="color:#fff">DATA.news</b> ของไฟล์ index.html</p>`));newsGrid.appendChild(card)});
+
+/* trainees */
+let traineeSex='B';
+function renderTrainees(){
+  const grid=document.getElementById('traineeGrid'); grid.innerHTML='';
+  DATA.trainees.filter(t=>t.sex===traineeSex).forEach((t,i)=>{const c=document.createElement('article');c.className='card trainee-card';c.innerHTML=`<div class="avatar"><span>${t.name.slice(0,1)}</span></div><div class="trainee-code">${t.id} · ${t.sex==='B'?'B-TRAINEE':'G-TRAINEE'}</div><div class="trainee-name">${t.name}</div><div class="trainee-meta"><span class="badge rose">GRADE ${t.grade}</span><span class="badge cyan">${t.position.split(' / ')[0]}</span></div>`;c.addEventListener('click',()=>openTrainee(t));grid.appendChild(c)});
+}
+function openTrainee(t){openModal(`<div class="eyebrow">TRAINEE PROFILE · ${t.id}</div><h2>${t.name}</h2><div class="sub">${t.sex==='B'?'B-TRAINEE':'G-TRAINEE'} · GRADE ${t.grade}</div><p style="font-style:italic;color:#c9c7cd">“${t.quote}”</p><div class="data-grid"><div class="data-cell"><b>Real Name</b><span>${t.real}</span></div><div class="data-cell"><b>Age</b><span>${t.age}</span></div><div class="data-cell"><b>Height</b><span>${t.height} cm</span></div><div class="data-cell"><b>Origin</b><span>${t.from}</span></div><div class="data-cell"><b>Position</b><span>${t.position}</span></div><div class="data-cell"><b>Status</b><span>PROFILE ACTIVE / EDITABLE</span></div></div><div class="divider"></div><p>พื้นที่นี้ออกแบบไว้สำหรับใส่รูปประจำตัว, วันเกิด, MBTI, blood type, social links, performance history, score และ achievement เพิ่มเติมภายหลัง</p>`)}
+document.querySelectorAll('#traineeTabs button').forEach(btn=>btn.addEventListener('click',()=>{traineeSex=btn.dataset.sex;document.querySelectorAll('#traineeTabs button').forEach(b=>b.classList.toggle('active',b===btn));renderTrainees()}));
+renderTrainees();
+
+/* ranking */
+let rankSex='B';
+function renderRanking(){const list=document.getElementById('rankList');list.innerHTML='';DATA.trainees.filter(t=>t.sex===rankSex).sort((a,b)=>(a.grade+a.id).localeCompare(b.grade+b.id)).forEach((t,i)=>{const score=1799-i*113;const r=document.createElement('div');r.className='rank-row '+(i===0?'top':'');r.innerHTML=`<div class="rank-no">${String(i+1).padStart(2,'0')}</div><div class="rank-name"><strong>${t.name}</strong><span>${t.id} · ${t.position}</span></div><div class="score">${score}<small>PTS</small></div>`;list.appendChild(r)})}
+document.querySelectorAll('#rankingTabs button').forEach(btn=>btn.addEventListener('click',()=>{rankSex=btn.dataset.sex;document.querySelectorAll('#rankingTabs button').forEach(b=>b.classList.toggle('active',b===btn));renderRanking()}));renderRanking();
+
+/* cast */
+const castGrid=document.getElementById('castGrid');DATA.cast.forEach((c,i)=>{const el=document.createElement('article');el.className='card cast-card';el.innerHTML=`<div class="role">${c.role}</div><h3>${c.name}</h3><p>${c.desc}</p>`;castGrid.appendChild(el)});
+
+/* program */
+let activeMonth=0;
+const months=document.getElementById('months');monthNames.forEach((m,i)=>{const b=document.createElement('button');b.className='month-btn '+(i===0?'active':'');b.textContent=m;b.addEventListener('click',()=>{activeMonth=i;document.querySelectorAll('.month-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderCalendar()});months.appendChild(b)});
+function renderCalendar(){
+ const y=2027,m=activeMonth;const first=new Date(y,m,1);const start=(first.getDay()+6)%7;const days=new Date(y,m+1,0).getDate();
+ const eventMap={};DATA.schedule.filter(s=>s.month===m+1).forEach(s=>{const d=parseInt(s.date.split(' ')[0]);eventMap[d]=s});
+ let html='<div class="calendar-head">'+['MON','TUE','WED','THU','FRI','SAT','SUN'].map(x=>`<div>${x}</div>`).join('')+'</div><div class="calendar-grid">';
+ for(let i=0;i<start;i++)html+='<div class="day muted"></div>';
+ for(let d=1;d<=days;d++){const ev=eventMap[d];html+=`<div class="day ${ev?'today':''}"><div class="num">${d}</div>${ev?`<span class="event-dot ${ev.tone==='c'?'c':''}"></span><div class="event-label">${ev.title}</div>`:''}</div>`}
+ const rem=(start+days)%7;if(rem)for(let i=rem;i<7;i++)html+='<div class="day muted"></div>';
+ html+='</div>';document.getElementById('calendar').innerHTML=html;
+ const list=document.getElementById('scheduleList');list.innerHTML='';DATA.schedule.filter(s=>s.month===m+1).forEach(s=>{const e=document.createElement('div');e.className='schedule-item';e.innerHTML=`<time>${s.date} 2570</time><div><strong>${s.title}</strong><span>${s.where}</span></div>`;list.appendChild(e)});
+}
+renderCalendar();
+
+/* Rules */
+const ruleGrid=document.getElementById('ruleGrid');DATA.rules.forEach(r=>{const el=document.createElement('div');el.className='card rule';el.innerHTML=`<div class="rule-no">${r[0]}</div><div><strong>${r[1]}</strong><p>${r[2]}</p></div>`;ruleGrid.appendChild(el)});
+
+/* Uniform */
+let uniformSex='B';
+function renderUniform(){const u=DATA.uniforms[uniformSex];document.getElementById('uniformCard').innerHTML=`<div class="uniform-visual"><div class="silhouette"><div class="head"></div><div class="body"></div><div class="leg l"></div><div class="leg r"></div><div class="shoe l"></div><div class="shoe r"></div></div></div><div class="uniform-copy"><div class="eyebrow">${u.title}</div><h3>${u.headline}</h3><p>${u.desc}</p><div class="specs">${u.specs.map(x=>`<div class="spec"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div></div>`}
+document.querySelectorAll('#uniformTabs button').forEach(btn=>btn.addEventListener('click',()=>{uniformSex=btn.dataset.sex;document.querySelectorAll('#uniformTabs button').forEach(b=>b.classList.toggle('active',b===btn));renderUniform()}));renderUniform();
+
+/* stages */
+const stageGrid=document.getElementById('stageGrid');DATA.stages.forEach(s=>{const el=document.createElement('article');el.className='card stage-card';el.innerHTML=`<div class="num">${s.no}</div><div class="eyebrow">${s.title}</div><h3>${s.name}</h3><p>${s.desc}</p><div class="meta">${s.meta.map(x=>`<span class="badge ${x==='LIVE'?'rose':'cyan'}">${x}</span>`).join('')}</div>`;el.addEventListener('click',()=>openModal(`<div class="eyebrow">STAGE ${s.no} · ${s.title}</div><h2>${s.name}</h2><div class="sub">THE PLANET IDOL / SEASON 01</div><p>${s.desc}</p><div class="data-grid">${s.meta.map(x=>`<div class="data-cell"><b>MISSION TAG</b><span>${x}</span></div>`).join('')}</div><div class="divider"></div><p>พื้นที่รายละเอียดรอบนี้สามารถใส่กติกา ทีม เพลง คะแนนพิเศษ deadline และลิงก์ส่งผลงานได้ในภายหลัง</p>`));stageGrid.appendChild(el)});
+
+/* music */
+const audio=document.getElementById('audio');let trackIndex=0;let objectURL=null;
+const trackList=document.getElementById('trackList');
+function renderTracks(){trackList.innerHTML='';DATA.tracks.forEach((t,i)=>{const el=document.createElement('div');el.className='track card';el.innerHTML=`<div class="track-art"></div><div><h3>${t.title}</h3><p>${t.artist}</p></div><button aria-label="Play ${t.title}">${i===trackIndex?'▶':'+'}</button>`;el.addEventListener('click',()=>loadTrack(i,true));trackList.appendChild(el)})}
+function fmt(sec){if(!isFinite(sec))return'00:00';const m=Math.floor(sec/60);const s=Math.floor(sec%60);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+function loadTrack(i,autoplay=false){trackIndex=(i+DATA.tracks.length)%DATA.tracks.length;const t=DATA.tracks[trackIndex];audio.src=objectURL || t.src;document.getElementById('nowPlaying').innerHTML=`${t.title}<small>${t.artist}</small>`;renderTracks();if(autoplay){audio.play().then(()=>{}).catch(()=>{});}}
+function togglePlay(){if(!audio.src)loadTrack(0,false);if(audio.paused)audio.play().catch(()=>{});else audio.pause()}
+document.getElementById('playBtn').addEventListener('click',togglePlay);document.getElementById('prevBtn').addEventListener('click',()=>loadTrack(trackIndex-1,true));document.getElementById('nextBtn').addEventListener('click',()=>loadTrack(trackIndex+1,true));audio.addEventListener('play',()=>document.getElementById('playBtn').textContent='❚❚');audio.addEventListener('pause',()=>document.getElementById('playBtn').textContent='▶');audio.addEventListener('timeupdate',()=>{if(audio.duration){document.getElementById('progress').value=(audio.currentTime/audio.duration)*100}document.getElementById('currentTime').textContent=fmt(audio.currentTime)});audio.addEventListener('loadedmetadata',()=>document.getElementById('duration').textContent=fmt(audio.duration));audio.addEventListener('ended',()=>loadTrack(trackIndex+1,true));document.getElementById('progress').addEventListener('input',e=>{if(audio.duration)audio.currentTime=(e.target.value/100)*audio.duration});
+document.getElementById('audioFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;if(objectURL)URL.revokeObjectURL(objectURL);objectURL=URL.createObjectURL(f);DATA.tracks[0].title=f.name.replace(/\.[^/.]+$/,'').toUpperCase();trackIndex=0;audio.src=objectURL;document.getElementById('nowPlaying').innerHTML=`${DATA.tracks[0].title}<small>LOCAL FILE · ${Math.round(f.size/1024/1024*10)/10} MB</small>`;audio.play().catch(()=>{});renderTracks()});
+renderTracks();loadTrack(0,false);
+
+/* modal */
+const modal=document.getElementById('modal'), modalBody=document.getElementById('modalBody');function openModal(html){modalBody.innerHTML=html;modal.classList.add('open')}function closeModal(){modal.classList.remove('open')};document.getElementById('modalClose').addEventListener('click',closeModal);modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+/* intro + sound */
+const intro=document.getElementById('intro');let userStarted=false;
+async function startAudio(){userStarted=true;try{audio.muted=false;if(!audio.src)loadTrack(0,false);await audio.play()}catch(e){audio.muted=true;try{await audio.play()}catch(_){} }}
+document.getElementById('enterBtn').addEventListener('click',async()=>{await startAudio();intro.classList.add('hide');go('home')});
+document.getElementById('soundBtn').addEventListener('click',async()=>{if(audio.muted){audio.muted=false;audio.play().catch(()=>{})}else{audio.muted=true}});
+window.addEventListener('pointerdown',()=>{if(!userStarted) return},{once:false});
+
+/* hash */
+const initial=location.hash.replace('#','');if(initial && document.getElementById('page-'+initial))go(initial);
+</script>
+</body>
+</html>
